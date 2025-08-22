@@ -17,25 +17,11 @@ public class EArrayList<T> {
         this.data = (T[]) new Object[this.capacity];
     }
 
-    private int getNextInsertIndex() {
-        for (int i = 0; i < this.data.length; i++) {
-            if(this.data[i] == null) {
-                return i;
-            }
-        }
-
-        return -1;
-    }
-
     private void isIndexInBounds(int index) {
         boolean isIndexOutBounds = index < 0 || index >= size;
         if(isIndexOutBounds) {
-            throw new IndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException(String.format("Index %d out of bounds for length %d", index, size));
         }
-    }
-
-    private boolean isIndexFilled(int index) {
-        return this.data[index] != null;
     }
 
     @SuppressWarnings("unchecked")
@@ -51,13 +37,6 @@ public class EArrayList<T> {
 
         this.capacity = newCapacity;
         this.data = resizedData;
-    }
-
-    private void moveItemsForNextIndex(int index) {
-        T[] originalData = data;
-        for (int i = index; i < originalData.length; i++) {
-
-        }
     }
 
     public void add(T element) {
@@ -76,13 +55,36 @@ public class EArrayList<T> {
         }
 
         if(this.data[index] != null) {
-            for (int i = index + 1; i < this.data.length; i++) {
+            for (int i = size + 1; i > index; i--) {
                 this.data[i] = this.data[i - 1];
             }
         }
 
         this.data[index] = element;
         size = size + 1;
+    }
+
+    public T remove(int index) {
+        this.isIndexInBounds(index);
+
+        T element = this.data[index];
+
+        for (int i = index; i < size; i++) {
+            this.data[i] = this.data[i + 1];
+        }
+
+        size = size - 1;
+        return element;
+    }
+
+    public T remove(T element) {
+        int index = indexOf(element);
+
+        if(index == -1) {
+            return null;
+        }
+
+        return remove(index);
     }
 
     public T set(int index, T element) {
@@ -113,7 +115,14 @@ public class EArrayList<T> {
         return indexOf(element) >= 0;
     }
 
+    @SuppressWarnings("unchecked")
     public T[] toArray() {
-        return this.data;
+        T[] dataTrim = (T[]) new Object[size];
+
+        for (int i = 0; i < size; i++) {
+            dataTrim[i] = data[i];
+        }
+
+        return dataTrim;
     }
 }
