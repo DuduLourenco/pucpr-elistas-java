@@ -70,7 +70,11 @@ public class EArrayList<T> {
         T element = this.data[index];
 
         for (int i = index; i < size; i++) {
-            this.data[i] = this.data[i + 1];
+            T nextObject = null;
+            if(i + 1 < this.data.length) {
+                nextObject = this.data[i + 1];
+            }
+            this.data[i] = nextObject;
         }
 
         size = size - 1;
